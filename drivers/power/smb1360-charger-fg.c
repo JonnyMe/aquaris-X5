@@ -4876,6 +4876,8 @@ static int smb_parse_batt_id(struct smb1360_chip *chip)
 	}
 	batt_id_uv = result.physical;
 
+	dev_info(chip->dev, "batt_id_uv: %lld\n", batt_id_uv);
+
 	if (batt_id_uv == 0) {
 		/* vadc not correct or batt id line grounded, report 0 kohms */
 		pr_err("batt_id_uv = 0, batt-id grounded using same profile\n");
@@ -4887,7 +4889,12 @@ static int smb_parse_batt_id(struct smb1360_chip *chip)
 		/* batt id connector might be open, return 0 kohms */
 		return 0;
 	}
+
+	dev_info(chip->dev, "denom: %lld\n", denom);
+
 	chip->connected_rid = div64_s64(rpull * 1000000LL + denom/2, denom);
+
+	dev_info(chip->dev, "connected_rid: %d\n", chip->connected_rid);
 
 	pr_debug("batt_id_voltage = %lld, connected_rid = %d\n",
 			batt_id_uv, chip->connected_rid);
